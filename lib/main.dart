@@ -1,7 +1,9 @@
-import 'package:blog_app/res/theme_changer.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+
+import 'package:blog_app/Utils/theme_changer.dart';
 import 'Windows/splash_screen.dart';
 
 void main() async {

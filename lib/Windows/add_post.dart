@@ -1,0 +1,332 @@
+import 'dart:io';
+import 'package:blog_app/Utils/show_message.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class AddPost extends StatefulWidget {
+  const AddPost({Key? key}) : super(key: key);
+
+  @override
+  State<AddPost> createState() => _AddPostState();
+}
+
+class _AddPostState extends State<AddPost> {
+  File? _image;
+  bool loading = false;
+  firebase_storage.FirebaseStorage _storage =
+      firebase_storage.FirebaseStorage.instance;
+  FirebaseAuth _user = FirebaseAuth.instance;
+  final _form = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
+  final FocusNode _titleFocus = FocusNode();
+  final FocusNode _bodyFocus = FocusNode();
+  final FocusNode _btnFocus = FocusNode();
+  final TextEditingController _bodyController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void dispose() {
+    _bodyFocus.dispose();
+    _titleFocus.dispose();
+    _btnFocus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Post'),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () {
+                pickImage();
+              },
+              child: Container(
+                  margin: const EdgeInsets.all(10),
+                  // alignment: Alignment.center,
+                  width: double.infinity,
+                  height: 250,
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.green.shade100,
+                      width: 4,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: _image != null
+                        ? Image(
+                            image: FileImage(_image!.absolute),
+                            fit: BoxFit.cover,
+                          )
+                        : Image(
+                            image: AssetImage('Assets/Logo/logo.png'),
+                            fit: BoxFit.contain,
+                          ),
+                  )),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Form(
+                  key: _form,
+                  child: ListView(
+                    children: [
+                      TextFormField(
+                        focusNode: _titleFocus,
+                        controller: _titleController,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          label: Text('Title'),
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (title) {
+                          if (title!.isEmpty) {
+                            return 'Title Field not be Empty';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(_bodyFocus);
+                        },
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        maxLines: null,
+                        minLines: 5,
+                        focusNode: _bodyFocus,
+                        controller: _bodyController,
+                        decoration: const InputDecoration(
+                          label: Text('body'),
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (title) {
+                          // if (title!.isEmpty) {
+                          //   return 'Title Field not be Empty';
+                          // }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(_btnFocus);
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      OutlinedButton(
+                        onPressed: () {
+                          onSave();
+                        },
+                        child: loading
+                            ? CircularProgressIndicator()
+                            : const Text('Post'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void onSave() async {
+    if (_form.currentState!.validate()) {
+      _form.currentState!.save();
+      try {
+        String id = _user.currentUser!.uid;
+        DateTime date = DateTime.now();
+        Uuid uuid = const Uuid();
+        String uId = uuid.v1();
+        setState(() {
+          loading = true;
+        });
+        //firbase firestore collection
+        final store = _firestore.collection('Blog/');
+        //firebase store reference
+        firebase_storage.Reference ref = firebase_storage
+            .FirebaseStorage.instance
+            .ref('Blog Posts/' + '$uId');
+        //uploading images
+        firebase_storage.UploadTask uploadTask = ref.putFile(_image!.absolute);
+        await Future.value(uploadTask);
+        //getting download url
+        var _url = await ref.getDownloadURL();
+
+        await store.doc(id).set(
+          {
+            'uId': id,
+            'title': _titleController.text,
+            'body': _bodyController.text,
+            'dateTime': date,
+            'imagePost': _url,
+          },
+        );
+        Utils(message: 'successfully Posted').showMessage();
+        setState(() {
+          loading = false;
+        });
+      } catch (e) {
+        Utils(message: '$e').showMessage();
+        setState(() {
+          loading = false;
+        });
+      }
+    }
+  }
+
+  pickImage() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SizedBox(
+        height: 400,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 100,
+              color: Theme.of(context).primaryColor,
+              child: Center(
+                child: Text(
+                  'Select Image',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+                    ),
+                    onPressed: () async {
+                      ImagePicker picker = ImagePicker();
+                      final pickedImage =
+                          await picker.pickImage(source: ImageSource.camera);
+                      setState(() {
+                        _image = File(pickedImage!.path);
+                      });
+                      Navigator.pop(context, true);
+                    },
+                    icon: Icon(
+                      Icons.camera,
+                    ),
+                    label: Text('Camera'),
+                  ),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+                    ),
+                    onPressed: () async {
+                      ImagePicker picker = ImagePicker();
+                      final pickedImage =
+                          await picker.pickImage(source: ImageSource.gallery);
+                      setState(() {
+                        _image = File(pickedImage!.path);
+                      });
+                      Navigator.pop(context, true);
+                    },
+                    icon: Icon(
+                      Icons.image,
+                    ),
+                    label: Text('Gallery'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// showDialog(
+//   context: context,
+//   builder: (context) => AlertDialog(
+//     title: const Text(
+//       'Select Image :',
+//       textAlign: TextAlign.center,
+//     ),
+//     content: SizedBox(
+//       height: 100,
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             children: [
+//               TextButton.icon(
+//                 onPressed: () async {
+//                   ImagePicker picker = ImagePicker();
+//                   final pickedImage =
+//                       await picker.pickImage(source: ImageSource.camera);
+//                   setState(() {
+//                     _image = File(pickedImage!.path);
+//                   });
+//                   Navigator.pop(context, true);
+//                 },
+//                 icon: Icon(
+//                   Icons.camera,
+//                 ),
+//                 label: Text('Camera'),
+//               ),
+//               TextButton.icon(
+//                 onPressed: () async {
+//                   ImagePicker picker = ImagePicker();
+//                   final pickedImage =
+//                       await picker.pickImage(source: ImageSource.gallery);
+//                   setState(() {
+//                     _image = File(pickedImage!.path);
+//                   });
+//                   Navigator.pop(context, true);
+//                 },
+//                 icon: Icon(
+//                   Icons.image,
+//                 ),
+//                 label: Text('Gallery'),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     ),
+//   ),
+// );

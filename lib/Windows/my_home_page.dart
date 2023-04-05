@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'add_post.dart';
 import 'my_drawer.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,9 +20,22 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AddPost(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.add,
+            ),
+          ),
+        ],
         title: const Text(
           'Blogs',
-
         ),
         centerTitle: true,
       ),
