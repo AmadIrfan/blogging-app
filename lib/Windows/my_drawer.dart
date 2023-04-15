@@ -1,9 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:blog_app/Windows/my_post.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 
 import 'package:blog_app/Auth/log_in.dart';
 import 'package:blog_app/Utils/show_message.dart';
@@ -12,7 +12,7 @@ import 'package:blog_app/Windows/profile.dart';
 import 'package:blog_app/Utils/theme_changer.dart';
 
 class MyDrawer extends StatefulWidget {
-  const MyDrawer({Key? key}  ) : super(key: key);
+  const MyDrawer({Key? key}) : super(key: key);
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
@@ -26,11 +26,9 @@ class _MyDrawerState extends State<MyDrawer> {
   // }
   @override
   Widget build(BuildContext context) {
-
     ThemeChanger theme = Provider.of<ThemeChanger>(context);
 
     return Scaffold(
-
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -114,59 +112,75 @@ class _MyDrawerState extends State<MyDrawer> {
                   'Change Theme',
                   () {
                     showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: const Text('Change Theme'),
-                              content: SizedBox(
-                                height: 200,
-                                child: Column(
-                                  children: [
-                                    RadioListTile<ThemeMode>(
-                                      value: ThemeMode.light,
-                                      groupValue: theme.themeMode,
-                                      title: const Text('Light Mode'),
-                                      onChanged: (v) {
-                                        theme.setThemeMod(v);
-                                        Utils(
-                                                message: 'Theme Changed $v',
-                                                color: Colors.blue)
-                                            .showMessage();
-                                      },
-                                    ),
-                                    RadioListTile<ThemeMode>(
-                                      value: ThemeMode.dark,
-                                      title: const Text('Dark Mode'),
-                                      groupValue: theme.themeMode,
-                                      onChanged: (v) {
-                                        if (kDebugMode) {
-                                          print(v);
-                                        }
-                                        theme.setThemeMod(v);
-                                        Utils(
-                                                message: 'Theme Changed $v',
-                                                color: Colors.blue)
-                                            .showMessage();
-                                      },
-                                    ),
-                                    RadioListTile<ThemeMode>(
-                                      value: ThemeMode.system,
-                                      title: const Text('System Mode'),
-                                      groupValue: theme.themeMode,
-                                      onChanged: (v) {
-                                        if (kDebugMode) {
-                                          print(v);
-                                        }
-                                        theme.setThemeMod(v);
-                                        Utils(
-                                                message: 'Theme Changed $v',
-                                                color: Colors.blue)
-                                            .showMessage();
-                                      },
-                                    ),
-                                  ],
-                                ),
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Change Theme'),
+                        content: SizedBox(
+                          height: 200,
+                          child: Column(
+                            children: [
+                              RadioListTile<ThemeMode>(
+                                value: ThemeMode.light,
+                                groupValue: theme.themeMode,
+                                title: const Text('Light Mode'),
+                                onChanged: (v) {
+                                  theme.setThemeMod(v);
+                                  Utils(
+                                          message: 'Theme Changed $v',
+                                          color: Colors.blue)
+                                      .showMessage();
+                                },
                               ),
-                            ));
+                              RadioListTile<ThemeMode>(
+                                value: ThemeMode.dark,
+                                title: const Text('Dark Mode'),
+                                groupValue: theme.themeMode,
+                                onChanged: (v) {
+                                  if (kDebugMode) {
+                                    print(v);
+                                  }
+                                  theme.setThemeMod(v);
+                                  Utils(
+                                          message: 'Theme Changed $v',
+                                          color: Colors.blue)
+                                      .showMessage();
+                                },
+                              ),
+                              RadioListTile<ThemeMode>(
+                                value: ThemeMode.system,
+                                title: const Text('System Mode'),
+                                groupValue: theme.themeMode,
+                                onChanged: (v) {
+                                  if (kDebugMode) {
+                                    print(v);
+                                  }
+                                  theme.setThemeMod(v);
+                                  Utils(
+                                          message: 'Theme Changed $v',
+                                          color: Colors.blue)
+                                      .showMessage();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                listWidgetCard(
+                  const Icon(
+                    Icons.person,
+                    size: 40,
+                  ),
+                  'My Posts',
+                  () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyPost(),
+                      ),
+                    );
                   },
                 ),
               ],

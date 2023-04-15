@@ -18,12 +18,13 @@ dependencies:
   fluttertoast: ^8.2.1
   firebase_database: ^10.1.0
   cloud_firestore: ^4.5.0
+  cached_network_image: ^3.2.3
   firebase_auth: ^4.4.0
   firebase_core: ^2.9.0
   firebase_storage: ^11.1.0
   image_picker: ^0.8.7+1
   uuid: ^3.0.7
-
+  open_file: ^3.2.1
 
 
 

@@ -160,12 +160,16 @@ class _AddPostState extends State<AddPost> {
     if (_form.currentState!.validate()) {
       _form.currentState!.save();
       try {
-        String id = _user.currentUser!.uid;
+        String postUserId = _user.currentUser!.uid;
         DateTime date = DateTime.now();
         Uuid uuid = const Uuid();
-        String uId = uuid.v1();
-        final store =
-            _firestore.collection('Blog').doc('$id').collection('BlogPost');
+        String blogId = uuid.v1();
+        final blog = _firestore.collection('Blog');
+        final user = _firestore
+            .collection('users')
+            .doc(postUserId)
+            .collection('UserPostedIdes');
+
         setState(() {
           loading = true;
         });
@@ -173,7 +177,7 @@ class _AddPostState extends State<AddPost> {
         if (_image != null) {
           firebase_storage.Reference ref = firebase_storage
               .FirebaseStorage.instance
-              .ref('Blog Posts/' + '$uId');
+              .ref('Blog Posts/' + '$blogId');
 
           //uploading images
           firebase_storage.UploadTask uploadTask =
@@ -182,17 +186,26 @@ class _AddPostState extends State<AddPost> {
           //getting download url
           _url = await ref.getDownloadURL();
         }
-        await store.doc('$uId').set(
+        await blog.doc('$blogId').set(
           {
-            'userId': id,
-            'postId': uId,
+            'userId': postUserId,
+            'postId': blogId,
             'title': _titleController.text,
             'body': _bodyController.text,
             'dateTime': date,
+            'updatedTime': date,
             'imagePost': _url,
           },
         );
-        Utils(message: 'successfully Posted').showMessage();
+
+        await user.doc(blogId).set(
+          {
+            'blogPostId': blogId,
+          },
+        );
+        Utils(
+          message: 'successfully Posted',
+        ).showMessage();
         setState(() {
           loading = false;
         });

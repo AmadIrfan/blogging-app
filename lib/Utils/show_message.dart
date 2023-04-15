@@ -19,7 +19,7 @@ class Utils {
       backgroundColor: color,
       textColor: Colors.white,
       fontSize: 16,
-      timeInSecForIosWeb: 1,
+      timeInSecForIosWeb: 2,
     );
   }
 }
