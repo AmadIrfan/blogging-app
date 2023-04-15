@@ -17,8 +17,9 @@ class AddPost extends StatefulWidget {
 class _AddPostState extends State<AddPost> {
   File? _image;
   bool loading = false;
-  firebase_storage.FirebaseStorage _storage =
-      firebase_storage.FirebaseStorage.instance;
+
+  // firebase_storage.FirebaseStorage _storage =
+  //     firebase_storage.FirebaseStorage.instance;
   FirebaseAuth _user = FirebaseAuth.instance;
   final _form = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
@@ -53,30 +54,31 @@ class _AddPostState extends State<AddPost> {
                 pickImage();
               },
               child: Container(
-                  margin: const EdgeInsets.all(10),
-                  // alignment: Alignment.center,
-                  width: double.infinity,
-                  height: 250,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.green.shade100,
-                      width: 4,
-                    ),
+                margin: const EdgeInsets.all(10),
+                // alignment: Alignment.center,
+                width: double.infinity,
+                height: 250,
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.green.shade100,
+                    width: 4,
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: _image != null
-                        ? Image(
-                            image: FileImage(_image!.absolute),
-                            fit: BoxFit.cover,
-                          )
-                        : Image(
-                            image: AssetImage('Assets/Logo/logo.png'),
-                            fit: BoxFit.contain,
-                          ),
-                  )),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: _image != null
+                      ? Image(
+                          image: FileImage(_image!.absolute),
+                          fit: BoxFit.cover,
+                        )
+                      : Image(
+                          image: AssetImage('Assets/Logo/logo.png'),
+                          fit: BoxFit.contain,
+                        ),
+                ),
+              ),
             ),
             const SizedBox(
               height: 20,
@@ -152,6 +154,9 @@ class _AddPostState extends State<AddPost> {
   }
 
   void onSave() async {
+    //firebase firestore collection
+
+    String _url = "";
     if (_form.currentState!.validate()) {
       _form.currentState!.save();
       try {
@@ -159,24 +164,28 @@ class _AddPostState extends State<AddPost> {
         DateTime date = DateTime.now();
         Uuid uuid = const Uuid();
         String uId = uuid.v1();
+        final store =
+            _firestore.collection('Blog').doc('$id').collection('BlogPost');
         setState(() {
           loading = true;
         });
-        //firbase firestore collection
-        final store = _firestore.collection('Blog/');
         //firebase store reference
-        firebase_storage.Reference ref = firebase_storage
-            .FirebaseStorage.instance
-            .ref('Blog Posts/' + '$uId');
-        //uploading images
-        firebase_storage.UploadTask uploadTask = ref.putFile(_image!.absolute);
-        await Future.value(uploadTask);
-        //getting download url
-        var _url = await ref.getDownloadURL();
+        if (_image != null) {
+          firebase_storage.Reference ref = firebase_storage
+              .FirebaseStorage.instance
+              .ref('Blog Posts/' + '$uId');
 
-        await store.doc(id).set(
+          //uploading images
+          firebase_storage.UploadTask uploadTask =
+              ref.putFile(_image!.absolute);
+          await Future.value(uploadTask);
+          //getting download url
+          _url = await ref.getDownloadURL();
+        }
+        await store.doc('$uId').set(
           {
-            'uId': id,
+            'userId': id,
+            'postId': uId,
             'title': _titleController.text,
             'body': _bodyController.text,
             'dateTime': date,
@@ -237,9 +246,11 @@ class _AddPostState extends State<AddPost> {
                       ImagePicker picker = ImagePicker();
                       final pickedImage =
                           await picker.pickImage(source: ImageSource.camera);
-                      setState(() {
-                        _image = File(pickedImage!.path);
-                      });
+                      if (pickedImage != null) {
+                        setState(() {
+                          _image = File(pickedImage.path);
+                        });
+                      }
                       Navigator.pop(context, true);
                     },
                     icon: Icon(
@@ -256,9 +267,11 @@ class _AddPostState extends State<AddPost> {
                       ImagePicker picker = ImagePicker();
                       final pickedImage =
                           await picker.pickImage(source: ImageSource.gallery);
-                      setState(() {
-                        _image = File(pickedImage!.path);
-                      });
+                      if (pickedImage != null) {
+                        setState(() {
+                          _image = File(pickedImage.path);
+                        });
+                      }
                       Navigator.pop(context, true);
                     },
                     icon: Icon(

@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "674957741395",
-    "project_id": "my-blogs-15d2a",
-    "storage_bucket": "my-blogs-15d2a.appspot.com"
+    "project_number": "348631570283",
+    "project_id": "realtimeblogging",
+    "storage_bucket": "realtimeblogging.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:674957741395:android:4e9672ed1ff9cf3b8d25a6",
+        "mobilesdk_app_id": "1:348631570283:android:1e16903045a12fc1831e2e",
         "android_client_info": {
           "package_name": "com.example.blog_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "674957741395-upv52nt3nraqpu1733pm41m9n726nm6k.apps.googleusercontent.com",
+          "client_id": "348631570283-4is6ut4geut40elal0uel9p3b37ihpau.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBhCoFUQk--yI5wM9h4c2DrMwJxuBviR_4"
+          "current_key": "AIzaSyB7eJ0IaBFPttGba4fom_fezh4Moo1jkPs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "674957741395-upv52nt3nraqpu1733pm41m9n726nm6k.apps.googleusercontent.com",
+              "client_id": "348631570283-4is6ut4geut40elal0uel9p3b37ihpau.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
