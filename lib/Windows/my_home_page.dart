@@ -53,8 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: StreamBuilder(
         stream: stream.collection('Blog').snapshots(),
-        builder: (context,
-            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapShot) {
+        builder: (context, snapShot) {
           print("length " + "${snapShot.data?.docs.length}");
           if (snapShot.connectionState == ConnectionState.waiting) {
             return Center(
