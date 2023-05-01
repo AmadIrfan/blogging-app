@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-
 import 'package:blog_app/Utils/show_message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -260,8 +259,11 @@ class _AddPostState extends State<AddPost> {
                     ),
                     onPressed: () async {
                       ImagePicker picker = ImagePicker();
-                      final pickedImage =
-                          await picker.pickImage(source: ImageSource.camera);
+                      final pickedImage = await picker.pickImage(
+                        source: ImageSource.camera,
+                        maxHeight: 350,
+                        maxWidth: double.infinity,
+                      );
                       if (pickedImage != null) {
                         setState(() {
                           _image = File(pickedImage.path);
@@ -281,8 +283,11 @@ class _AddPostState extends State<AddPost> {
                     ),
                     onPressed: () async {
                       ImagePicker picker = ImagePicker();
-                      final pickedImage =
-                          await picker.pickImage(source: ImageSource.gallery);
+                      final pickedImage = await picker.pickImage(
+                        source: ImageSource.gallery,
+                        maxHeight: 350,
+                        maxWidth: double.infinity,
+                      );
                       if (pickedImage != null) {
                         setState(() {
                           _image = File(pickedImage.path);

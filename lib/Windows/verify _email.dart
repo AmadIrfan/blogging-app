@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import '../Utils/show_message.dart';
 import '../Utils/round_button.dart';
 
-class ForgetPassword extends StatefulWidget {
-  const ForgetPassword({Key? key}) : super(key: key);
+class VerifyEmail extends StatefulWidget {
+  const VerifyEmail({Key? key}) : super(key: key);
 
   @override
-  State<ForgetPassword> createState() => _ForgetPasswordState();
+  State<VerifyEmail> createState() => _VerifyEmailState();
 }
 
-class _ForgetPasswordState extends State<ForgetPassword> {
+class _VerifyEmailState extends State<VerifyEmail> {
   bool loading = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _form = GlobalKey<FormState>();
@@ -32,7 +32,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 children: [
                   const Center(
                     child: Text(
-                      'Forget Password',
+                      'Verify Email',
                       style: TextStyle(
                         fontSize: 35,
                         fontWeight: FontWeight.bold,
@@ -53,10 +53,9 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     ),
                     validator: (email) {
                       if (email!.isEmpty) {
-                        return "Enter an valid Email";
-                      } else {
-                        return null;
+                        return "Please provide a valid Email";
                       }
+                      return null;
                     },
                   ),
                   const SizedBox(
@@ -85,7 +84,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     if (_form.currentState!.validate()) {
       try {
         _form.currentState!.save();
-        await _auth.sendPasswordResetEmail(email: _emailController.text);
+        await _auth.currentUser!.sendEmailVerification();
         Utils(
                 message: 'Check you mailbox email has been sent',
                 color: Colors.red)

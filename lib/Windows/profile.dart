@@ -1,3 +1,4 @@
+import 'package:blog_app/Windows/add_data.dart';
 import 'package:flutter/material.dart';
 
 import 'package:blog_app/Windows/my_drawer.dart';
@@ -24,8 +25,14 @@ class ProfilePage extends StatelessWidget {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () {},
-            icon:const Icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => MyDetails(),
+                ),
+              );
+            },
+            icon: const Icon(
               Icons.edit,
             ),
             tooltip: 'Edit Profile',

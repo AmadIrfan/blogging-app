@@ -11,6 +11,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -21,47 +22,49 @@ class MyApp extends StatelessWidget {
           create: (context) => ThemeChanger(),
         ),
       ],
-      child: Builder(builder: (context) {
-        ThemeChanger theme = Provider.of<ThemeChanger>(context);
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Blog App',
-          theme: ThemeData(
-            brightness: Brightness.light,
-            // drawerTheme: DrawerThemeData(
-            //   width: 20,
-            //  surfaceTintColor: Colors.blue,
-            //   scrimColor: Colors.blue,
-            // ),
-            appBarTheme: const AppBarTheme(
-              titleTextStyle: TextStyle(
-                color: Colors.blue,
-                fontSize: 30,
+      child: Builder(
+        builder: (context) {
+          ThemeChanger theme = Provider.of<ThemeChanger>(context);
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Blog App',
+            theme: ThemeData(
+              brightness: Brightness.light,
+              // drawerTheme: DrawerThemeData(
+              //   width: 20,
+              //  surfaceTintColor: Colors.blue,
+              //   scrimColor: Colors.blue,
+              // ),
+              appBarTheme: const AppBarTheme(
+                titleTextStyle: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 30,
+                ),
+                iconTheme: IconThemeData(
+                  color: Colors.blue,
+                ),
               ),
-              iconTheme: IconThemeData(
-                color: Colors.blue,
+              primarySwatch: Colors.blue,
+            ),
+            themeMode: theme.themeMode,
+            darkTheme: ThemeData(
+              primarySwatch: Colors.blue,
+              brightness: Brightness.dark,
+              appBarTheme: const AppBarTheme(
+                titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                ),
+                iconTheme: IconThemeData(
+                  color: Colors.white,
+                ),
               ),
             ),
-            primarySwatch: Colors.blue,
-          ),
-          themeMode: theme.themeMode,
-          darkTheme: ThemeData(
-            primarySwatch: Colors.blue,
-            brightness: Brightness.dark,
-            appBarTheme: const AppBarTheme(
-              titleTextStyle: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-              ),
-              iconTheme: IconThemeData(
-                color: Colors.white,
-              ),
-            ),
-          ),
-          // home: const MyHomePage(),
-          home: const SplashScreen(),
-        );
-      }),
+            // home: const MyHomePage(),
+            home: const SplashScreen(),
+          );
+        },
+      ),
     );
   }
 }

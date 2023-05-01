@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:blog_app/Auth/log_in.dart';
+import 'package:blog_app/Windows/verify%20_email.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -31,12 +32,22 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           );
         } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MyHomePage(),
-            ),
-          );
+          print(_auth.currentUser!.emailVerified);
+          if (_auth.currentUser!.emailVerified) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MyHomePage(),
+              ),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const VerifyEmail(),
+              ),
+            );
+          }
         }
       },
     );
@@ -51,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children:  const [
+            children: const [
               CircleAvatar(
                 radius: 100,
                 foregroundColor: Colors.green,
